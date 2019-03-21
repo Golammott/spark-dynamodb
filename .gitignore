@@ -1,4 +1,5 @@
 /target/
+.cache-main
 .classpath
 .project
 .settings/
