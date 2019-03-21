@@ -7,18 +7,22 @@ import org.apache.spark.datasources.dynamodb.{DynamodbDataSourceOptions, DynamoC
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.types.StructType;
 
+import scala.collection.JavaConverters._
+
 class DynamodbDataSourceReader(options: DynamodbDataSourceOptions) extends DataSourceReader {
   
   def readSchema(): StructType = {
-    // figure out how to get the user defined schema instead of defaulting to only keys for the table
-    val ddbClient = new DynamoClient("us-west-2")
-    ddbClient.getTable().table().attributeDefinitions()
+    // TODO get the user defined schema instead of defaulting to only keys for the table
+    val ddbClient = new DynamoClient(options.getRegion(), options.getTable())
     
-    //StructType()
+    ddbClient.getDefaultSchema()
   }
-  //List<InputPartition<InternalRow>> planInputPartitions();
-  def planInputPartitions(): Seq[InputPartition[InternalRow]] = {
+
+  def planInputPartitions(): java.util.List[InputPartition[InternalRow]] = {
     val totalSegments = options.getSegments()
-    (0 until totalSegments).map(segmentNumber => new DynamodbInputPartition(segmentNumber, totalSegments))
+    (0 until totalSegments).map(segmentNumber => { 
+      new DynamodbInputPartition(options, segmentNumber, totalSegments): InputPartition[InternalRow]
+    }).toList.asJava 
+
   }
 }
