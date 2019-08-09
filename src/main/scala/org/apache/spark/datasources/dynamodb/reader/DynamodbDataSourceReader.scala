@@ -13,15 +13,16 @@ class DynamodbDataSourceReader(options: DynamodbDataSourceOptions) extends DataS
   
   def readSchema(): StructType = {
     // TODO get the user defined schema instead of defaulting to only keys for the table
-    val ddbClient = new DynamoClient(options.getRegion(), options.getTable())
+    val ddbClient = new DynamoClient(options.table, options.region)
     
+    //options
     ddbClient.getDefaultSchema()
   }
 
   def planInputPartitions(): java.util.List[InputPartition[InternalRow]] = {
-    val totalSegments = options.getSegments()
+    val totalSegments = options.segments
     (0 until totalSegments).map(segmentNumber => { 
-      new DynamodbInputPartition(options, segmentNumber, totalSegments): InputPartition[InternalRow]
+      new DynamodbInputPartition(options.table, options.region, options.capacity, segmentNumber, totalSegments, readSchema()): InputPartition[InternalRow]
     }).toList.asJava 
 
   }

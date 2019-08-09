@@ -1,4 +1,7 @@
 /target/
+project/target
+project/project
+.idea/
 .cache-main
 .classpath
 .project
