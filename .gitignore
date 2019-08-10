@@ -1,4 +1,5 @@
 /target/
+Test*Driver.scala
 project/target
 project/project
 .idea/
