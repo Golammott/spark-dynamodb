@@ -59,19 +59,11 @@ class DynamodbDataWriter(val table: String, val region: String, val schema: Stru
       case FloatType | DoubleType | LongType | IntegerType => Some(builder.n(item.toString))
       case MapType(keyType, valueType, _) => {
 
-        println("help me out hereeee")
-        println(item.getClass.toString)
-        println(item.getClass.toString)
-        println(item.getClass.toString)
-        println(keyType.getClass.toString)
-        println(valueType.getClass.toString)
-
         if (keyType != StringType) throw new IllegalArgumentException(
           s"Invalid Map key type '${keyType.typeName}'. DynamoDB only supports String as Map key type.")
 
         val unsafeMap = item.asInstanceOf[UnsafeMapData]
         val elements = (0 until unsafeMap.numElements()).map(i => {
-          //(i.toString, Some(builder.n(i.toString)))
           val v = unsafeMap.valueArray().get(i, valueType)
           (unsafeMap.keyArray().getUTF8String(i).toString, mapFieldType(v, valueType, true))
         }).collect({
@@ -82,17 +74,5 @@ class DynamodbDataWriter(val table: String, val region: String, val schema: Stru
       }
     }
   }
-
-//  def internalRowToString(row: InternalRow, idx: Int, field: StructField): String = {
-//    field.dataType match {
-//      case DataTypes.StringType => row.getUTF8String(idx).toString
-//      case DataTypes.IntegerType => row.getInt(idx).toString
-//      case DataTypes.DoubleType => row.getDouble(idx).toString
-//      case DataTypes.FloatType => row.getFloat(idx).toString
-//      case DataTypes.LongType => row.getLong(idx).toString
-//      //case DataTypes.MapType => AttributeValue.builder().m()
-//    }
-//
-//  }
   
 }

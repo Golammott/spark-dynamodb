@@ -10,16 +10,12 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient
 
 
-
 import org.apache.spark.sql.types.{StructField, StructType, StringType, MapType, LongType, IntegerType, DataType, BinaryType, BooleanType, DoubleType}
 
 import scala.collection.JavaConverters._
-import org.apache.spark.deploy.history.LogInfo
 import org.apache.spark.internal.Logging
 
 class DynamoClient(val table: String, val region: String) extends Logging {
-
-  //NettyNioAsyncHttpClient.Builder
   
   val ddb = DynamoDbAsyncClient.builder()
     .credentialsProvider(DefaultCredentialsProvider.builder().build())
@@ -54,10 +50,13 @@ class DynamoClient(val table: String, val region: String) extends Logging {
     ddb.scan(scanRequest.build()).get()
   }
 
-  //def writeBatch()
+  def writeBatch(): Unit = {
+    // TODO
+    throw new RuntimeException("Batch write not implemented")
+  }
+
   def write(item: java.util.Map[String, AttributeValue]): Unit = {
-    val putRequest = PutItemRequest.builder().tableName(table).item(item).build()//.item(item).build()
-    //WriteRequest.builder().
+    val putRequest = PutItemRequest.builder().tableName(table).item(item).build()
     ddb.putItem(putRequest).get()
   }
   
